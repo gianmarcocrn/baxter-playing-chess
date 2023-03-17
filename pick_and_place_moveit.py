@@ -108,9 +108,9 @@ class PickAndPlaceMoveIt(object):
         # servo to pose
         self._servo_to_pose(pose)
         # close gripper
-        rospy.sleep(0.5)
+        rospy.sleep(1.0)
         self.gripper_close()
-        rospy.sleep(0.5)
+        rospy.sleep(1.0)
         # retract to clear object
         self._retract()
 
@@ -120,54 +120,13 @@ class PickAndPlaceMoveIt(object):
         # servo to pose
         self._servo_to_pose(pose)
         # open the gripper
-        rospy.sleep(0.5)
+        rospy.sleep(1.0)
         self.gripper_open()
-        rospy.sleep(0.5)
+        rospy.sleep(1.0)
         # retract to clear object
         self._retract()
 
 
-# def load_gazebo_models(table_pose=Pose(position=Point(x=1.0, y=0.0, z=0.0)),
-#                        table_reference_frame="world",
-#                        block_pose=Pose(position=Point(x=0.68, y=0.11, z=0.7825)),
-#                        block_reference_frame="world"):
-#     # Get Models' Path
-#     model_path = rospkg.RosPack().get_path('baxter_sim_examples')+"/models/"
-#     # Load Table SDF
-#     table_xml = ''
-#     with open(model_path + "cafe_table/model.sdf", "r") as table_file:
-#         table_xml = table_file.read().replace('\n', '')
-#     # Load block SDF
-#     block_xml = ''
-#     with open(model_path + "block/model.sdf", "r") as block_file:
-#         block_xml = block_file.read().replace('\n', '')
-#     # Spawn Table SDF
-#     rospy.wait_for_service('/gazebo/spawn_sdf_model')
-#     try:
-#         spawn_sdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
-#         spawn_sdf("cafe_table", table_xml, "/", table_pose, table_reference_frame)
-#     except rospy.ServiceException, e:
-#         rospy.logerr("Spawn SDF service call failed: {0}".format(e))
-#     # Spawn block SDF
-#     rospy.wait_for_service('/gazebo/spawn_sdf_model')
-#     try:
-#         spawn_sdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
-#         spawn_sdf("block", block_xml, "/", block_pose, block_reference_frame)
-#     except rospy.ServiceException, e:
-#         rospy.logerr("Spawn SDF service call failed: {0}".format(e))
-
-
-# def delete_gazebo_models():
-#     # This will be called on ROS Exit, deleting Gazebo models
-#     # Do not wait for the Gazebo Delete Model service, since
-#     # Gazebo should already be running. If the service is not
-#     # available since Gazebo has been killed, it is fine to error out
-#     try:
-#         delete_model = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
-#         delete_model("cafe_table")
-#         delete_model("block")
-#     except rospy.ServiceException, e:
-#         rospy.loginfo("Delete Model service call failed: {0}".format(e))
 
 def add_pose_to_list(pose_list, coordinate, frame_of_reference):
     overhead_orientation = Quaternion(x=-0.0249590815779, y=0.999649402929, z=0.00737916180073, w=0.00486450832011)
@@ -175,17 +134,6 @@ def add_pose_to_list(pose_list, coordinate, frame_of_reference):
         position=Point(x=frame_of_reference[coordinate][0], y=frame_of_reference[coordinate][1], z=frame_of_reference[coordinate][2]),
         orientation=overhead_orientation))
 
-# def setup_starting_pieces(pieces_xml, piece_list, picking_poses):
-#     limb = 'left'
-#     hover_distance = 0.15  # meters
-#     pnp = PickAndPlaceMoveIt(limb, hover_distance)
-#     spawn_pose = Pose(position=Point(x=0.5, y=0.5, z=0.0))
-#     srv_call = rospy.ServiceProxy("gazebo/spawn_sdf_model", SpawnModel)
-#     for i in range(len(picking_poses)):
-#         print srv_call(piece_list[i], pieces_xml[piece_list[i][0]], "/", spawn_pose, "world")
-#         pnp.pick(spawn_pose)
-#         pnp.place(picking_poses[i])
-#     print("HELLOOOO")
 
 def perform_moves():
     pass
@@ -259,19 +207,16 @@ def main():
     for coordinate in placing_coordinates:
         add_pose_to_list(placing_poses, coordinate, target_piece_position_map)
 
-    #spawn_pose = Pose(position=Point(x=0.5, y=0.5, z=0.0))
-    #spawn_pose = Pose(position=Point(x=0.68, y=0.68, z=0.7825))
-    srv_call = rospy.ServiceProxy("gazebo/spawn_sdf_model", SpawnModel)
-    for i in range(len(picking_poses)):
-        print srv_call(pieces_to_place[i], pieces_xml[pieces_to_place[i][0]], "/", spawn_pose, "world")
-        pick_pose = Pose(position=Point(x=spawn_pose.position.x, y=spawn_pose.position.y, z=-0.14), orientation=overhead_orientation)
-        pnp.pick(pick_pose)
-        print("Picking", pieces_to_place[i])
-        place_pose = Pose(position=Point(x=picking_poses[i].position.x, y=picking_poses[i].position.y, z=-0.14), orientation=overhead_orientation)
-        pnp.place(place_pose)
-        print("Placing", pieces_to_place[i])
+    # srv_call = rospy.ServiceProxy("gazebo/spawn_sdf_model", SpawnModel)
+    # for i in range(len(picking_poses)):
+    #     print srv_call(pieces_to_place[i], pieces_xml[pieces_to_place[i][0]], "/", spawn_pose, "world")
+    #     pick_pose = Pose(position=Point(x=spawn_pose.position.x, y=spawn_pose.position.y, z=-0.14), orientation=overhead_orientation)
+    #     pnp.pick(pick_pose)
+    #     print("Picking", pieces_to_place[i])
+    #     place_pose = Pose(position=Point(x=picking_poses[i].position.x, y=picking_poses[i].position.y, z=-0.14), orientation=overhead_orientation)
+    #     pnp.place(place_pose)
+    #     print("Placing", pieces_to_place[i])
 
-    #setup_starting_pieces(pieces_xml, pieces_to_place, picking_poses)
     
     for i in range(len(picking_coordinates)):
         pick_pose = Pose(position=Point(x=picking_poses[i].position.x, y=picking_poses[i].position.y, z=-0.14), orientation=overhead_orientation)

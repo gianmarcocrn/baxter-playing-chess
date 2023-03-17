@@ -50,7 +50,7 @@ if __name__ == '__main__':
             pieces_xml[each] = f.read().replace('\n', '')
 
     # board_setup = ['rnbqkbnr', 'pppppppp', '', '', '', '', 'PPPPPPPP', 'RNBQKBNR']
-    board_setup = ['*n*****r', '***p****', '', '', '', '', '', '**BQ****']
+    board_setup = ['*n*****r', '***p****', '', '', '', '', '**P*****', '***Q****']
 
     piece_positionmap = dict()
     piece_names = []
